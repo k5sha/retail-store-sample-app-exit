@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.5.0](https://github.com/k5sha/retail-store-sample-app-exit/compare/v1.4.0...v1.5.0) (2026-03-14)
+
+
+### Features
+
+* add terraform ([c3853e0](https://github.com/k5sha/retail-store-sample-app-exit/commit/c3853e00765830a4754d016d7d2686043197222d))
+* add terraform ([b2efb75](https://github.com/k5sha/retail-store-sample-app-exit/commit/b2efb75fe87affe6e52a8641b4344fcc7c530c92))
+
 ## [1.4.0](https://github.com/aws-containers/retail-store-sample-app/compare/v1.3.0...v1.4.0) (2026-01-30)
 
 
