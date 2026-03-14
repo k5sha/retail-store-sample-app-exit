@@ -41,7 +41,18 @@ argocd app get retail-store-ui-prod
 
 1. Змінити в Git щось у `deploy/gitops/` або в `src/ui/chart` (наприклад, тег образу в `ui-application.yaml`).
 2. Запушити зміни.
-3. Через 1–3 хв перевірити: `argocd app get retail-store-ui-prod` — має бути **Synced**, у кластері `kubectl get pods -n ui` — новий деплой відповідно до змін.
+3. Через 1–3 хв перевірити: `argocd app get retail-store-ui-prod` — має бути **Synced**, у кластері `kubectl get pods -n ui-prod` — новий деплой відповідно до змін.
+
+---
+
+## Оновлення UI після зміни коду
+
+Код UI (наприклад `src/ui/...`) потрапляє в кластер через **Docker-образ**. Щоб зміни з’явились:
+
+1. **Зібрати і запушити новий образ** у ECR (тег `staging-latest` для staging або `latest` для prod).
+2. **Оновити деплой** одним із способів:
+   - У `ui-staging-application.yaml` (або `ui-application.yaml`) збільшити `app/buildId` (наприклад з `"1"` на `"2"`), закомітити і запушити в `staging`/`main`. Argo CD підхопить зміну і зробить rollout; завдяки `pullPolicy: Always` поди підтягнуть новий образ.
+   - Або вручну: `kubectl rollout restart deployment -n ui-staging retail-store-ui-staging` (після push нового образу з тим самим тегом).
 
 ---
 
@@ -53,7 +64,9 @@ argocd app get retail-store-ui-prod
 
 ## Структура
 
-- **Prod** (гілка `main`): `ui-application.yaml`, `catalog-application.yaml`, `cart-application.yaml`, `orders-application.yaml`, `checkout-application.yaml` → namespaces `ui`, `catalog`, `cart`, `orders`, `checkout`.
-- **Staging** (гілка `staging`): `*-staging-application.yaml` → namespaces `ui-staging`, `catalog-staging`, тощо.
+- **Prod** (гілка `main`): `ui-application.yaml`, `catalog-application.yaml`, `cart-application.yaml`, `orders-application.yaml`, `checkout-application.yaml`, `monitoring-application.yaml`, `monitoring-rules-application.yaml` → namespaces `ui-prod`, `catalog`, `cart`, `orders`, `checkout`, `monitoring`.
+- **Staging** (гілка `staging`): `*-staging-application.yaml` + ті самі `monitoring-application.yaml` та `monitoring-rules-application.yaml` → namespaces `ui-staging`, `catalog-staging`, … + `monitoring`.
+
+**Моніторинг** (Prometheus, Grafana, правила) деплоїться через CD в обох середовищах. Зміни в `deploy/monitoring-rules/` після push у `main` автоматично підхоплює Argo CD (Application `monitoring-rules`). Якщо Application `monitoring` не синхронізується (Helm chart), додай репо в Argo CD: Settings → Repositories → Connect repo using HTTPS → `https://prometheus-community.github.io/helm-charts`, type Helm.
 
 CI при push у `main`/`staging` оновлює тег образу у відповідних Application-файлах; Argo CD бачить зміну в Git і синхронізує кластер.
