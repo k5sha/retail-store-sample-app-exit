@@ -6,14 +6,14 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:k5sha/retail-store-sample-app-exit.git # заміни на свій URL, якщо інший
+    repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git # заміни на свій URL, якщо інший
     targetRevision: main
     path: src/orders/chart
     helm:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-orders
-          tag: latest
+          tag: prod-9303a8d
   destination:
     server: https://kubernetes.default.svc
     namespace: orders
@@ -21,4 +21,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
 
