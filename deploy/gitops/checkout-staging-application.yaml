@@ -1,23 +1,22 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: retail-store-ui-prod
+  name: retail-store-checkout-staging
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git
-    targetRevision: main
-    path: src/ui/chart
+    targetRevision: staging
+    path: src/checkout/chart
     helm:
-      releaseName: ui
       values: |
         image:
-          repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: latest
+          repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-checkout
+          tag: stg-e7632c2
   destination:
     server: https://kubernetes.default.svc
-    namespace: ui
+    namespace: checkout-staging
   syncPolicy:
     automated:
       prune: true

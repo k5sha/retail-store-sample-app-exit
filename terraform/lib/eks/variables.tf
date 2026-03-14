@@ -41,3 +41,35 @@ variable "opentelemetry_enabled" {
   type        = bool
   default     = false
 }
+
+# GitOps (Argo CD) — встановлюється разом з кластером, синхронізує мікросервіси з Git
+variable "gitops_enabled" {
+  description = "Install Argo CD and bootstrap Application that syncs microservices from Git."
+  type        = bool
+  default     = true
+}
+
+variable "gitops_repo_url" {
+  description = "Git repo URL for Argo CD (HTTPS). Example: https://github.com/org/repo.git"
+  type        = string
+  default     = ""
+}
+
+variable "gitops_target_revision" {
+  description = "Branch or tag to sync (e.g. main for prod, staging for staging)."
+  type        = string
+  default     = "main"
+}
+
+variable "gitops_path" {
+  description = "Path in repo containing Application manifests (e.g. deploy/gitops)."
+  type        = string
+  default     = "deploy/gitops"
+}
+
+# Якщо задано — під час apply застосовуються дочірні Application з цієї директорії (обходить обмеження directory sync).
+variable "gitops_manifests_local_path" {
+  description = "Absolute or relative path to deploy/gitops (e.g. from root: path.module/../../deploy/gitops). When set, child Applications are applied from here during terraform apply."
+  type        = string
+  default     = ""
+}

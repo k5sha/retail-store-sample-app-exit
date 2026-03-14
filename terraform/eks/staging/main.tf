@@ -59,4 +59,11 @@ module "retail_app_eks" {
   tags                  = module.tags.result
 
   istio_enabled = var.istio_enabled
+
+  # GitOps: Argo CD + bootstrap Application синхронізують мікросервіси з Git (staging)
+  gitops_enabled                 = var.gitops_enabled
+  gitops_repo_url                = var.gitops_repo_url
+  gitops_target_revision        = var.gitops_target_revision
+  gitops_path                   = var.gitops_path
+  gitops_manifests_local_path   = var.gitops_manifests_local_path != "" ? var.gitops_manifests_local_path : "${path.module}/../../../deploy/gitops"
 }

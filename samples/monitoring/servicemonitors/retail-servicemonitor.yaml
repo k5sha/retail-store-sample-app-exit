@@ -1,0 +1,26 @@
+# ServiceMonitor template for applications exposing Prometheus metrics.
+# This demo php-apache workload is used for HPA/autoscaling validation and
+# does not expose a native Prometheus /metrics endpoint.
+#
+# Replace labels, port name, and path when connecting a real metrics-enabled service.
+#
+# Example:
+#
+# apiVersion: monitoring.coreos.com/v1
+# kind: ServiceMonitor
+# metadata:
+#   name: retail-store
+#   namespace: monitoring
+#   labels:
+#     release: kube-prom-stack
+# spec:
+#   namespaceSelector:
+#     matchNames:
+#       - default
+#   selector:
+#     matchLabels:
+#       app: retail-store
+#   endpoints:
+#     - port: metrics
+#       path: /metrics
+#       interval: 15s
