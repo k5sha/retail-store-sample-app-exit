@@ -1,0 +1,26 @@
+alertmanager:
+  enabled: true
+
+  config:
+    global:
+      resolve_timeout: 5m
+      smtp_smarthost: 'smtp.gmail.com:587'
+      smtp_from: 'echohamilton905@gmail.com'
+      smtp_auth_username: 'echohamilton905@gmail.com'
+      smtp_auth_password: 'rqck xvre jeat yqyz'
+      smtp_require_tls: true
+
+    route:
+      group_by: [ 'alertname', 'namespace', 'severity' ]
+      group_wait: 10s
+      group_interval: 30s
+      repeat_interval: 2h
+      receiver: 'email-default'
+
+    receivers:
+    - name: 'email-default'
+      email_configs:
+      - to: 'na6052212@gmail.com'
+        send_resolved: true
+
+    inhibit_rules: []
