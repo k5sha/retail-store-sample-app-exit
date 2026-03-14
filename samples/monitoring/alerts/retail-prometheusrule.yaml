@@ -1,41 +1,50 @@
+# Алерти для retail-store (неймспейси ui-prod, ui-staging, catalog, carts, orders, checkout та їхні staging).
+# Джерело для deploy: копіюй у deploy/monitoring-rules/retail-prometheusrule.yaml (або тримай через kustomize/git).
+# У deploy має бути label release: monitoring (Helm release name = Application name в Argo CD).
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: retail-sli-alerts
+  name: retail-alerts
   namespace: monitoring
   labels:
-    release: kube-prom-stack
+    release: monitoring
 spec:
   groups:
-  - name: retail-sli.rules
+  - name: retail.rules
     rules:
-    - alert: HighErrorRate
+    - alert: RetailPodNotReady
       expr: |
-        (
-          sum(rate(http_requests_total{namespace="default",status=~"5.."}[5m]))
-          /
-          sum(rate(http_requests_total{namespace="default"}[5m]))
-        ) > 0.05
+        count by (namespace) (
+          kube_pod_status_ready{namespace=~"ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging",condition="false"} == 1
+        ) > 0
       for: 5m
       labels:
         severity: warning
         team: retail
       annotations:
-        summary: "High error rate"
-        description: "5xx error rate is above 5% for 5 minutes in namespace default."
+        summary: "Retail pod not ready"
+        description: "Namespace {{ $labels.namespace }} has pods not ready for more than 5 minutes."
 
-    - alert: HighLatencyP95
+    - alert: RetailHighCPUUsage
       expr: |
-        histogram_quantile(
-          0.95,
-          sum by (le) (
-            rate(http_request_duration_seconds_bucket{namespace="default"}[5m])
-          )
-        ) > 0.75
+        100 * sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace=~"ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging",container!="",image!=""}[5m]))
+        / sum by (namespace, pod) (kube_pod_container_resource_requests{namespace=~"ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging",resource="cpu"})
+        > 90
       for: 5m
+      labels:
+        severity: warning
+        team: retail
+      annotations:
+        summary: "High CPU usage in retail workload"
+        description: "Pod {{ $labels.pod }} in {{ $labels.namespace }} is using more than 90% of CPU request for 5 minutes."
+
+    - alert: RetailDeploymentNoReplicas
+      expr: |
+        kube_deployment_status_replicas_available{namespace=~"ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging"} == 0
+      for: 2m
       labels:
         severity: critical
         team: retail
       annotations:
-        summary: "High p95 latency"
-        description: "P95 latency is above 750ms for 5 minutes in namespace default."
+        summary: "Retail deployment has no available replicas"
+        description: "Deployment {{ $labels.deployment }} in {{ $labels.namespace }} has 0 available replicas for 2 minutes."
