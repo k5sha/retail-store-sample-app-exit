@@ -64,7 +64,9 @@ argocd app get retail-store-ui-prod
 
 ## Структура
 
-- **Prod** (гілка `main`): `ui-application.yaml`, `catalog-application.yaml`, `cart-application.yaml`, `orders-application.yaml`, `checkout-application.yaml` → namespaces `ui`, `catalog`, `cart`, `orders`, `checkout`.
-- **Staging** (гілка `staging`): `*-staging-application.yaml` → namespaces `ui-staging`, `catalog-staging`, тощо.
+- **Prod** (гілка `main`): `ui-application.yaml`, `catalog-application.yaml`, `cart-application.yaml`, `orders-application.yaml`, `checkout-application.yaml`, `monitoring-application.yaml`, `monitoring-rules-application.yaml` → namespaces `ui-prod`, `catalog`, `cart`, `orders`, `checkout`, `monitoring`.
+- **Staging** (гілка `staging`): `*-staging-application.yaml` + ті самі `monitoring-application.yaml` та `monitoring-rules-application.yaml` → namespaces `ui-staging`, `catalog-staging`, … + `monitoring`.
+
+**Моніторинг** (Prometheus, Grafana, правила) деплоїться через CD в обох середовищах. Зміни в `deploy/monitoring-rules/` після push у `main` автоматично підхоплює Argo CD (Application `monitoring-rules`). Якщо Application `monitoring` не синхронізується (Helm chart), додай репо в Argo CD: Settings → Repositories → Connect repo using HTTPS → `https://prometheus-community.github.io/helm-charts`, type Helm.
 
 CI при push у `main`/`staging` оновлює тег образу у відповідних Application-файлах; Argo CD бачить зміну в Git і синхронізує кластер.
