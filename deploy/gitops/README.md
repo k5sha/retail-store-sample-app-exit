@@ -41,7 +41,18 @@ argocd app get retail-store-ui-prod
 
 1. Змінити в Git щось у `deploy/gitops/` або в `src/ui/chart` (наприклад, тег образу в `ui-application.yaml`).
 2. Запушити зміни.
-3. Через 1–3 хв перевірити: `argocd app get retail-store-ui-prod` — має бути **Synced**, у кластері `kubectl get pods -n ui` — новий деплой відповідно до змін.
+3. Через 1–3 хв перевірити: `argocd app get retail-store-ui-prod` — має бути **Synced**, у кластері `kubectl get pods -n ui-prod` — новий деплой відповідно до змін.
+
+---
+
+## Оновлення UI після зміни коду
+
+Код UI (наприклад `src/ui/...`) потрапляє в кластер через **Docker-образ**. Щоб зміни з’явились:
+
+1. **Зібрати і запушити новий образ** у ECR (тег `staging-latest` для staging або `latest` для prod).
+2. **Оновити деплой** одним із способів:
+   - У `ui-staging-application.yaml` (або `ui-application.yaml`) збільшити `app/buildId` (наприклад з `"1"` на `"2"`), закомітити і запушити в `staging`/`main`. Argo CD підхопить зміну і зробить rollout; завдяки `pullPolicy: Always` поди підтягнуть новий образ.
+   - Або вручну: `kubectl rollout restart deployment -n ui-staging retail-store-ui-staging` (після push нового образу з тим самим тегом).
 
 ---
 
