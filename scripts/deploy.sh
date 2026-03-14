@@ -21,21 +21,23 @@ helm upgrade --install kube-prom-stack prometheus-community/kube-prometheus-stac
   -f ./samples/monitoring/kube-prometheus-stack/values.yaml
 
 echo "=== Applying alert rules ==="
-kubectl apply -f ./samples/monitoring/alerts/retail-prometheusrule.yaml
+kubectl apply -f ./deploy/monitoring-rules/retail-prometheusrule.yaml
 
-echo "=== Applying ServiceMonitor if present ==="
-if [ -f ./samples/monitoring/servicemonitors/retail-servicemonitor.yaml ]; then
+echo "=== Applying ServiceMonitor if file exists and is not empty ==="
+if [ -s ./samples/monitoring/servicemonitors/retail-servicemonitor.yaml ]; then
   kubectl apply -f ./samples/monitoring/servicemonitors/retail-servicemonitor.yaml
+else
+  echo "ServiceMonitor file missing or empty, skipping"
 fi
 
 echo "=== Deploying workload ==="
-kubectl apply -f ./samples/autoscaling/php-apache.yaml
+kubectl apply -f ./deploy/autoscaling/php-apache.yaml
 
 echo "=== Waiting for deployment ==="
 kubectl rollout status deployment/php-apache -n default
 
 echo "=== Applying HPA ==="
-kubectl apply -f ./samples/autoscaling/php-apache-hpa.yaml
+kubectl apply -f ./deploy/autoscaling/php-apache-hpa.yaml
 
 echo "=== Current status ==="
 kubectl get pods -A
