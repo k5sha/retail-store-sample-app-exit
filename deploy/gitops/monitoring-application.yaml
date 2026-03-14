@@ -14,16 +14,24 @@ spec:
     targetRevision: 69.8.2
     helm:
       values: |
+        # Усі сервіси ClusterIP — без LoadBalancer (доступ до Grafana: kubectl port-forward svc/monitoring-grafana -n monitoring 3000:80)
         grafana:
           enabled: true
           adminPassword: admin
           service:
-            type: LoadBalancer
+            type: ClusterIP
+          sidecar:
+            dashboards:
+              enabled: true
+              label: grafana_dashboard
+              labelValue: "1"
+              searchNamespace: same
+          defaultDashboardsTimezone: browser
 
         prometheus:
           enabled: true
           service:
-            type: LoadBalancer
+            type: ClusterIP
           prometheusSpec:
             serviceMonitorSelectorNilUsesHelmValues: false
             podMonitorSelectorNilUsesHelmValues: false
@@ -33,16 +41,53 @@ spec:
         alertmanager:
           enabled: true
           service:
-            type: LoadBalancer
+            type: ClusterIP
 
         kubeStateMetrics:
           enabled: true
 
         nodeExporter:
           enabled: true
+
+        # Мінімальний набір правил — без etcd, kube-apiserver, scheduler тощо (менше PrometheusRule CR)
+        defaultRules:
+          create: true
+          rules:
+            alertmanager: false
+            etcd: false
+            configReloaders: true
+            general: true
+            k8sContainerCpuUsageSecondsTotal: true
+            k8sContainerMemoryWorkingSetBytes: true
+            k8sContainerResource: true
+            k8sPodOwner: true
+            kubeApiserverAvailability: false
+            kubeApiserverBurnrate: false
+            kubeApiserverHistogram: false
+            kubeApiserverSlos: false
+            kubeControllerManager: false
+            kubelet: false
+            kubeProxy: false
+            kubePrometheusGeneral: true
+            kubePrometheusNodeRecording: true
+            kubernetesApps: true
+            kubernetesResources: true
+            kubernetesStorage: false
+            kubernetesSystem: true
+            kubeSchedulerAlerting: false
+            kubeSchedulerRecording: false
+            kubeStateMetrics: true
+            network: false
+            node: true
+            nodeExporterAlerting: true
+            nodeExporterRecording: true
+            prometheus: true
+            prometheusOperator: true
+            windows: false
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply=true

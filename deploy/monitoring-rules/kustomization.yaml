@@ -1,5 +1,18 @@
+# Правила Prometheus + дашборди Grafana (sidecar підхоплює ConfigMap з label grafana_dashboard=1).
+# Джерело дашбордів: samples/monitoring/dashboards/ — при оновленні скопіюй .json у dashboards/.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
+namespace: monitoring
+
 resources:
   - retail-prometheusrule.yaml
+
+configMapGenerator:
+  - name: grafana-dashboards-retail
+    files:
+      - dashboards/retail-hpa-demo.json
+    options:
+      labels:
+        grafana_dashboard: "1"
+        grafana_dashboard_folder: Retail
