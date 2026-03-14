@@ -77,3 +77,46 @@ jobs:
             fi
           fi
 
+  # Update GitOps manifests so Argo CD syncs and deploys the new image
+  update-gitops:
+    name: Update GitOps image tag
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/staging')
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ github.token }}
+
+      - name: Set image tag
+        id: tag
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          if [ "${{ github.ref }}" = "refs/heads/staging" ]; then
+            echo "tag=stg-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=prod-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Update deploy manifests with new image tag
+        run: |
+          TAG="${{ steps.tag.outputs.tag }}"
+          if [ "${{ github.ref }}" = "refs/heads/staging" ]; then
+            sed -i "s/tag: staging-latest/tag: ${TAG}/" deploy/gitops/ui-staging-application.yaml
+            sed -i "s/tag: staging-latest/tag: ${TAG}/" deploy/gitops/catalog-staging-application.yaml
+          else
+            sed -i "s/tag: latest/tag: ${TAG}/" deploy/gitops/ui-application.yaml
+            sed -i "s/tag: latest/tag: ${TAG}/" deploy/gitops/catalog-application.yaml
+          fi
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add deploy/gitops/
+          git diff --staged --quiet || git commit -m "chore(gitops): set image tag to ${{ steps.tag.outputs.tag }} [skip ci]"
+          git push
+

@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: retail-store-checkout-staging
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: git@github.com:k5sha/retail-store-sample-app-exit.git # заміни на свій URL, якщо інший
+    targetRevision: staging
+    path: src/checkout/chart
+    helm:
+      values: |
+        image:
+          repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-checkout
+          tag: staging-latest
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: checkout-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
