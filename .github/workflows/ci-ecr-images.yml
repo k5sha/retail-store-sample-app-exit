@@ -107,7 +107,8 @@ jobs:
           TAG="${{ steps.tag.outputs.tag }}"
           if [ "${{ github.ref }}" = "refs/heads/staging" ]; then
             for f in deploy/gitops/*-staging-application.yaml; do
-              sed -i "s/tag: staging-latest/tag: ${TAG}/" "$f"
+              # Replace either staging-latest or existing stg-<sha> so staging always gets the new tag
+              sed -i "s/tag: staging-latest/tag: ${TAG}/; s/tag: stg-[a-f0-9]*/tag: ${TAG}/" "$f"
             done
           else
             for f in deploy/gitops/ui-application.yaml deploy/gitops/catalog-application.yaml deploy/gitops/cart-application.yaml deploy/gitops/orders-application.yaml deploy/gitops/checkout-application.yaml; do
