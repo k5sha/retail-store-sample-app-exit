@@ -1,0 +1,79 @@
+name: CI ECR
+
+on:
+  pull_request:
+    branches: [main, staging]
+  push:
+    branches: [main, staging]
+
+permissions:
+  contents: read
+
+env:
+  AWS_REGION: eu-central-1
+
+jobs:
+  build-and-push:
+    name: Build & Push (ui, catalog)
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ui, catalog]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set image tag
+        id: meta
+        run: |
+          SHORT_SHA="${GITHUB_SHA::7}"
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            echo "tag=pr-${{ github.event.number }}-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+          else
+            BRANCH="${GITHUB_REF##*/}"
+            if [ "$BRANCH" = "staging" ]; then
+              echo "tag=stg-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+            else
+              echo "tag=prod-${SHORT_SHA}" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: Build and push image
+        env:
+          AWS_ECR_REPOSITORY: ${{ secrets.AWS_ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ steps.meta.outputs.tag }}
+          SERVICE: ${{ matrix.service }}
+        run: |
+          set -e
+          IMAGE_NAME="${AWS_ECR_REPOSITORY}/retail-store-sample-${SERVICE}"
+
+          cd "src/${SERVICE}"
+          docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
+          docker push "${IMAGE_NAME}:${IMAGE_TAG}"
+
+          # On merge to main/staging, also push environment-specific 'latest'
+          if [ "${{ github.event_name }}" = "push" ]; then
+            BRANCH="${GITHUB_REF##*/}"
+            if [ "$BRANCH" = "staging" ]; then
+              docker tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:staging-latest"
+              docker push "${IMAGE_NAME}:staging-latest"
+            else
+              docker tag "${IMAGE_NAME}:${IMAGE_TAG}" "${IMAGE_NAME}:latest"
+              docker push "${IMAGE_NAME}:latest"
+            fi
+          fi
+
