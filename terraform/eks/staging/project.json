@@ -1,8 +1,8 @@
 {
-  "name": "terraform-eks-default",
+  "name": "terraform-eks-staging",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "library",
-  "sourceRoot": "terraform/eks/default",
+  "sourceRoot": "terraform/eks/staging",
   "targets": {
     "build": {
       "executor": "nx:run-commands",
