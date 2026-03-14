@@ -1,0 +1,21 @@
+grafana:
+  adminPassword: admin
+  defaultDashboardsTimezone: browser
+  service:
+    type: ClusterIP
+
+prometheus:
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    scrapeInterval: 15s
+
+alertmanager:
+  enabled: true
+
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
