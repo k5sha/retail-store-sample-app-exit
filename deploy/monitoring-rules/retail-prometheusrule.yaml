@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: retail-autoscaling-alerts
+  namespace: monitoring
+  labels:
+    release: kube-prom-stack
+spec:
+  groups:
+  - name: retail-autoscaling.rules
+    rules:
+    - alert: HPAScalingUp
+      expr: kube_horizontalpodautoscaler_status_desired_replicas{namespace="default",horizontalpodautoscaler="php-apache"} > kube_horizontalpodautoscaler_status_current_replicas{namespace="default",horizontalpodautoscaler="php-apache"}
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "HPA is scaling up php-apache"
+        description: "Desired replicas are higher than current replicas for php-apache."
+
+    - alert: HighCPUPerPod
+      expr: 100 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="default",pod=~"php-apache-.*",container!="",image!=""}[2m])) / 0.2 > 80
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High CPU usage per pod"
+        description: "A php-apache pod is using more than 80% of its CPU request for 5 minutes."

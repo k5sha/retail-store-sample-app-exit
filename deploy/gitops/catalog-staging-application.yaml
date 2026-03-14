@@ -13,7 +13,7 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-catalog
-          tag: staging-latest
+          tag: stg-e7632c2
   destination:
     server: https://kubernetes.default.svc
     namespace: catalog-staging
