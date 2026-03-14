@@ -57,7 +57,7 @@ variable "gitops_path" {
 }
 
 variable "gitops_manifests_local_path" {
-  description = "Path to deploy/gitops for applying child Applications during terraform apply (relative to repo root or absolute)."
+  description = "Path to deploy/gitops for applying child Applications during terraform apply. Empty = skip."
   type        = string
   default     = ""
 }

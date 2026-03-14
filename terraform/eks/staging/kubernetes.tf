@@ -351,7 +351,10 @@ resource "helm_release" "orders" {
   ]
 }
 
+# When GitOps is enabled, UI is deployed by Argo CD to ui-staging (with LoadBalancer). Skip Terraform UI.
 resource "kubernetes_namespace_v1" "ui" {
+  count = var.gitops_enabled ? 0 : 1
+
   depends_on = [
     data.kubernetes_nodes.vpc_ready_nodes
   ]
@@ -364,6 +367,8 @@ resource "kubernetes_namespace_v1" "ui" {
 }
 
 resource "helm_release" "ui" {
+  count = var.gitops_enabled ? 0 : 1
+
   depends_on = [
     helm_release.catalog,
     helm_release.carts,
@@ -374,7 +379,7 @@ resource "helm_release" "ui" {
   name  = "ui"
   chart = "../../../src/ui/chart"
 
-  namespace = kubernetes_namespace_v1.ui.metadata[0].name
+  namespace = kubernetes_namespace_v1.ui[0].metadata[0].name
 
   values = [
     templatefile("${path.module}/values/ui.yaml", {
@@ -388,6 +393,8 @@ resource "helm_release" "ui" {
 }
 
 resource "time_sleep" "restart_pods" {
+  count = var.gitops_enabled ? 0 : 1
+
   triggers = {
     opentelemetry_enabled = var.opentelemetry_enabled
   }
@@ -395,12 +402,14 @@ resource "time_sleep" "restart_pods" {
   create_duration = "30s"
 
   depends_on = [
-    helm_release.ui
+    helm_release.ui[0]
   ]
 }
 
 resource "null_resource" "restart_pods" {
-  depends_on = [time_sleep.restart_pods]
+  count = var.gitops_enabled ? 0 : 1
+
+  depends_on = [time_sleep.restart_pods[0]]
 
   triggers = {
     opentelemetry_enabled = var.opentelemetry_enabled

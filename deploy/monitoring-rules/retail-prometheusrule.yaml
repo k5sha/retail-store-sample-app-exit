@@ -1,42 +1,28 @@
-# Retail SLI alerts — aligned with samples/monitoring/alerts/retail-prometheusrule.yaml
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
-  name: retail-sli-alerts
+  name: retail-autoscaling-alerts
   namespace: monitoring
   labels:
     release: kube-prom-stack
 spec:
   groups:
-  - name: retail-sli.rules
+  - name: retail-autoscaling.rules
     rules:
-    - alert: HighErrorRate
-      expr: |
-        (
-          sum(rate(http_requests_total{namespace="default",status=~"5.."}[5m]))
-          /
-          sum(rate(http_requests_total{namespace="default"}[5m]))
-        ) > 0.05
-      for: 5m
+    - alert: HPAScalingUp
+      expr: kube_horizontalpodautoscaler_status_desired_replicas{namespace="default",horizontalpodautoscaler="php-apache"} > kube_horizontalpodautoscaler_status_current_replicas{namespace="default",horizontalpodautoscaler="php-apache"}
+      for: 2m
       labels:
         severity: warning
-        team: retail
       annotations:
-        summary: "High error rate"
-        description: "5xx error rate is above 5% for 5 minutes in namespace default."
+        summary: "HPA is scaling up php-apache"
+        description: "Desired replicas are higher than current replicas for php-apache."
 
-    - alert: HighLatencyP95
-      expr: |
-        histogram_quantile(
-          0.95,
-          sum by (le) (
-            rate(http_request_duration_seconds_bucket{namespace="default"}[5m])
-          )
-        ) > 0.75
+    - alert: HighCPUPerPod
+      expr: 100 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace="default",pod=~"php-apache-.*",container!="",image!=""}[2m])) / 0.2 > 80
       for: 5m
       labels:
         severity: critical
-        team: retail
       annotations:
-        summary: "High p95 latency"
-        description: "P95 latency is above 750ms for 5 minutes in namespace default."
+        summary: "High CPU usage per pod"
+        description: "A php-apache pod is using more than 80% of its CPU request for 5 minutes."
