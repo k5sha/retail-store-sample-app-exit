@@ -15,3 +15,4 @@ configMapGenerator:
     options:
       labels:
         grafana_dashboard: "1"
+        grafana_dashboard_folder: Retail
