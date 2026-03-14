@@ -1,4 +1,4 @@
-name: CI ECR
+name: CI ECR image
 
 on:
   pull_request:
