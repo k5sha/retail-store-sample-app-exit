@@ -26,9 +26,6 @@ spec:
               label: grafana_dashboard
               searchNamespace: same
           defaultDashboardsTimezone: browser
-          datasources:
-            url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
-            timeout: 60
 
         prometheus:
           enabled: true
