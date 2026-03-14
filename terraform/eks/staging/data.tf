@@ -31,3 +31,10 @@ data "kubernetes_service" "ui_staging_service" {
     namespace = "ui-staging"
   }
 }
+
+# Live hostname from cluster (kubectl) so output shows URL as soon as LB is ready
+data "external" "ui_staging_lb_hostname" {
+  count = var.gitops_enabled ? 1 : 0
+
+  program = ["sh", "-c", "hn=$(kubectl get svc -n ui-staging retail-store-ui-staging -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null); echo \"{\\\"hostname\\\": \\\"$${hn:-}\\\"}\""]
+}

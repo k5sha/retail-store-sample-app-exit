@@ -2,21 +2,30 @@
 
 If you see:
 ```
-Error: ServiceAccount "argocd-application-controller" in namespace "argocd" exists and cannot be imported into the current release: invalid ownership metadata...
+Error: ... exists and cannot be imported into the current release: invalid ownership metadata...
 ```
+(e.g. ServiceAccount, **ClusterRole** "argocd-application-controller", CRD)
 
-Argo CD was installed outside this Terraform (e.g. manually or by an older run). Helm cannot adopt those resources.
+Argo CD was installed outside this Terraform. Helm cannot adopt those resources.
 
-**Fix: clean reinstall**
+**Fix: clean reinstall — видалити namespace, CRD, ClusterRole і ClusterRoleBinding**
 
 ```bash
-# 1. Delete the existing argocd namespace (Applications are in Git and will be recreated)
+# 1. Delete the argocd namespace
 kubectl delete namespace argocd
 
-# 2. Wait until the namespace is gone
-kubectl get namespace argocd  # should be "NotFound"
+# 2. Delete Argo CD CRDs
+kubectl get crd -o name | grep argoproj.io | xargs kubectl delete 2>/dev/null || true
 
-# 3. Run Terraform again
+# 3. Delete Argo CD ClusterRoleBindings and ClusterRoles (спочатку bindings)
+kubectl get clusterrolebinding -o name | grep argocd | xargs kubectl delete 2>/dev/null || true
+kubectl get clusterrole -o name | grep argocd | xargs kubectl delete 2>/dev/null || true
+
+# 4. Переконайся, що все видалено
+kubectl get namespace argocd   # "NotFound"
+kubectl get clusterrole | grep argocd   # нічого
+
+# 5. Terraform apply (з terraform/eks/staging або prod)
 terraform apply
 ```
 
