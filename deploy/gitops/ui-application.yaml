@@ -10,14 +10,21 @@ spec:
     targetRevision: main
     path: src/ui/chart
     helm:
-      releaseName: ui
+      releaseName: retail-store-ui-prod
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: prod-9303a8d
+          tag: prod-bd2168f
+        service:
+          type: LoadBalancer
+          annotations:
+            service.beta.kubernetes.io/aws-load-balancer-type: external
+            service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+            service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
+            service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
   destination:
     server: https://kubernetes.default.svc
-    namespace: ui
+    namespace: ui-prod
   syncPolicy:
     automated:
       prune: true
