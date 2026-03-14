@@ -33,7 +33,6 @@
             "mode": "palette-classic"
           },
           "decimals": 0,
-          "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -44,11 +43,11 @@
               },
               {
                 "color": "orange",
-                "value": 3
+                "value": 2
               },
               {
                 "color": "red",
-                "value": 5
+                "value": 4
               }
             ]
           },
@@ -81,14 +80,14 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache-hpa\"}",
+          "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache\"}",
           "legendFormat": "current replicas",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache-hpa\"}",
+          "expr": "kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache\"}",
           "legendFormat": "desired replicas",
           "range": true,
           "refId": "B"
@@ -108,7 +107,6 @@
             "mode": "palette-classic"
           },
           "decimals": 0,
-          "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -119,11 +117,11 @@
               },
               {
                 "color": "orange",
-                "value": 3
+                "value": 2
               },
               {
                 "color": "red",
-                "value": 5
+                "value": 4
               }
             ]
           },
@@ -176,7 +174,6 @@
             "mode": "palette-classic"
           },
           "decimals": 4,
-          "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -245,7 +242,6 @@
             "mode": "palette-classic"
           },
           "decimals": 2,
-          "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -294,7 +290,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * sum(rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) by (pod) / 0.2",
+          "expr": "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) / 0.2",
           "legendFormat": "{{pod}}",
           "range": true,
           "refId": "A"
@@ -314,7 +310,6 @@
             "mode": "palette-classic"
           },
           "decimals": 4,
-          "mappings": [],
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -363,7 +358,7 @@
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) / count(kube_pod_status_ready{namespace=\"default\",condition=\"true\",pod=~\"php-apache-.*\"} == 1)",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) / clamp_min(count(kube_pod_status_ready{namespace=\"default\",condition=\"true\",pod=~\"php-apache-.*\"} == 1), 1)",
           "legendFormat": "avg cpu per ready pod",
           "range": true,
           "refId": "A"
@@ -410,7 +405,7 @@
   "timepicker": {},
   "timezone": "browser",
   "title": "Retail HPA / Autoscaling Demo",
-  "uid": "retail-hpa-demo1",
+  "uid": "retail-hpa-demo",
   "version": 1,
   "weekStart": ""
 }
