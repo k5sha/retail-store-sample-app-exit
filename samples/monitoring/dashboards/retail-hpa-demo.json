@@ -29,71 +29,44 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "decimals": 0,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 4
-              }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 2 },
+              { "color": "red", "value": 4 }
             ]
           },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
       "id": 1,
       "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "legend": { "calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache\"}",
-          "legendFormat": "current replicas",
+          "expr": "kube_deployment_status_replicas{namespace=~\"$namespaces\"}",
+          "legendFormat": "{{namespace}}/{{deployment}} (current)",
           "range": true,
           "refId": "A"
         },
         {
           "editorMode": "code",
-          "expr": "kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache\"}",
-          "legendFormat": "desired replicas",
+          "expr": "kube_deployment_spec_replicas{namespace=~\"$namespaces\"}",
+          "legendFormat": "{{namespace}}/{{deployment}} (desired)",
           "range": true,
           "refId": "B"
         }
       ],
-      "title": "HPA Replicas",
+      "title": "Replicas by Deployment",
       "type": "timeseries"
     },
     {
@@ -103,64 +76,37 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "decimals": 0,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 4
-              }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 2 },
+              { "color": "red", "value": 4 }
             ]
           },
           "unit": "short"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 0
-      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
       "id": 2,
       "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "legend": { "calcs": ["lastNotNull", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "count(kube_pod_status_ready{namespace=\"default\",condition=\"true\",pod=~\"php-apache-.*\"} == 1)",
-          "legendFormat": "ready pods",
+          "expr": "count by (namespace) (kube_pod_status_ready{namespace=~\"$namespaces\",condition=\"true\"} == 1)",
+          "legendFormat": "{{namespace}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Ready Pods",
+      "title": "Ready Pods by Namespace",
       "type": "timeseries"
     },
     {
@@ -170,60 +116,32 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "decimals": 4,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.05
-              },
-              {
-                "color": "red",
-                "value": 0.15
-              }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 0.05 },
+              { "color": "red", "value": 0.15 }
             ]
           },
           "unit": "cores"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 8
-      },
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 8 },
       "id": 3,
       "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "legend": { "calcs": ["lastNotNull", "mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m]))",
-          "legendFormat": "{{pod}}",
+          "expr": "sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespaces\",container!=\"\",image!=\"\"}[2m]))",
+          "legendFormat": "{{namespace}}/{{pod}}",
           "range": true,
           "refId": "A"
         }
@@ -238,60 +156,32 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "decimals": 2,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 50
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 50 },
+              { "color": "red", "value": 80 }
             ]
           },
           "unit": "percent"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 0,
-        "y": 17
-      },
+      "gridPos": { "h": 9, "w": 12, "x": 0, "y": 17 },
       "id": 4,
       "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "legend": { "calcs": ["lastNotNull", "mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "100 * sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) / 0.2",
-          "legendFormat": "{{pod}}",
+          "expr": "100 * sum by (namespace, pod) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespaces\",container!=\"\",image!=\"\"}[2m])) / sum by (namespace, pod) (kube_pod_container_resource_requests{namespace=~\"$namespaces\",resource=\"cpu\"})",
+          "legendFormat": "{{namespace}}/{{pod}}",
           "range": true,
           "refId": "A"
         }
@@ -306,84 +196,59 @@
       },
       "fieldConfig": {
         "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
+          "color": { "mode": "palette-classic" },
           "decimals": 4,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "orange",
-                "value": 0.05
-              },
-              {
-                "color": "red",
-                "value": 0.15
-              }
+              { "color": "green", "value": null },
+              { "color": "orange", "value": 0.05 },
+              { "color": "red", "value": 0.15 }
             ]
           },
           "unit": "cores"
         },
         "overrides": []
       },
-      "gridPos": {
-        "h": 9,
-        "w": 12,
-        "x": 12,
-        "y": 17
-      },
+      "gridPos": { "h": 9, "w": 12, "x": 12, "y": 17 },
       "id": 5,
       "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull",
-            "mean",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
+        "legend": { "calcs": ["lastNotNull", "mean", "max"], "displayMode": "table", "placement": "bottom", "showLegend": true },
+        "tooltip": { "mode": "multi", "sort": "desc" }
       },
       "targets": [
         {
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) / clamp_min(count(kube_pod_status_ready{namespace=\"default\",condition=\"true\",pod=~\"php-apache-.*\"} == 1), 1)",
-          "legendFormat": "avg cpu per ready pod",
+          "expr": "sum by (namespace) (rate(container_cpu_usage_seconds_total{namespace=~\"$namespaces\",container!=\"\",image!=\"\"}[2m])) / clamp_min(count by (namespace) (kube_pod_status_ready{namespace=~\"$namespaces\",condition=\"true\"} == 1), 1)",
+          "legendFormat": "{{namespace}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Average CPU per Ready Pod",
+      "title": "Average CPU per Ready Pod (by Namespace)",
       "type": "timeseries"
     }
   ],
   "refresh": "10s",
   "schemaVersion": 41,
-  "tags": [
-    "retail",
-    "autoscaling",
-    "hpa",
-    "prometheus"
-  ],
+  "tags": ["retail", "autoscaling", "prometheus"],
   "templating": {
     "list": [
       {
-        "current": {
-          "selected": false,
-          "text": "Prometheus",
-          "value": "Prometheus"
-        },
+        "current": { "selected": true, "text": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging", "value": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging" },
+        "hide": 0,
+        "label": "Namespaces (regex)",
+        "name": "namespaces",
+        "options": [
+          { "selected": true, "text": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging", "value": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging" }
+        ],
+        "query": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging",
+        "skipUrlSync": false,
+        "type": "custom"
+      },
+      {
+        "current": { "selected": false, "text": "Prometheus", "value": "Prometheus" },
         "hide": 0,
         "includeAll": false,
         "label": "Datasource",
@@ -398,14 +263,11 @@
       }
     ]
   },
-  "time": {
-    "from": "now-1h",
-    "to": "now"
-  },
+  "time": { "from": "now-1h", "to": "now" },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Retail HPA / Autoscaling Demo",
+  "title": "Retail Store — Replicas & CPU",
   "uid": "retail-hpa-demo",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
