@@ -3,3 +3,4 @@ kind: Kustomization
 
 resources:
   - retail-prometheusrule.yaml
+  - retail-autoscaling-prometheusrule.yaml
