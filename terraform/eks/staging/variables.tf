@@ -30,3 +30,34 @@ variable "container_image_overrides" {
   default     = {}
   description = "Object that encapsulates any overrides to default values"
 }
+
+# GitOps (Argo CD) — репо з deploy/gitops та гілка staging
+variable "gitops_enabled" {
+  description = "Install Argo CD and sync microservices from Git (deploy/gitops)."
+  type        = bool
+  default     = true
+}
+
+variable "gitops_repo_url" {
+  description = "Git repo URL for Argo CD (HTTPS). E.g. https://github.com/org/repo.git"
+  type        = string
+  default     = "https://github.com/k5sha/retail-store-sample-app-exit.git"
+}
+
+variable "gitops_target_revision" {
+  description = "Branch to sync for staging (default staging)."
+  type        = string
+  default     = "staging"
+}
+
+variable "gitops_path" {
+  description = "Path in repo with Application manifests."
+  type        = string
+  default     = "deploy/gitops"
+}
+
+variable "gitops_manifests_local_path" {
+  description = "Path to deploy/gitops for applying child Applications during terraform apply. Empty = skip."
+  type        = string
+  default     = ""
+}

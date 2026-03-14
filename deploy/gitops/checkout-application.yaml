@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:k5sha/retail-store-sample-app-exit.git # заміни на свій URL, якщо інший
+    repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git # заміни на свій URL, якщо інший
     targetRevision: main
     path: src/checkout/chart
     helm:
@@ -21,4 +21,6 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
 

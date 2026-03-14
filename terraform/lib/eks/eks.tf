@@ -146,7 +146,15 @@ module "eks_blueprints_addons" {
   oidc_provider_arn = module.eks_cluster.oidc_provider_arn
 
   enable_aws_load_balancer_controller = true
-  enable_cert_manager                 = true
+  aws_load_balancer_controller = {
+    # Avoid "no endpoints available for service aws-load-balancer-webhook-service" when
+    # cert-manager (or any Service) is created before the webhook pods are ready.
+    set = [
+      { name = "enableServiceMutatorWebhook", value = "false" }
+    ]
+  }
+
+  enable_cert_manager = true
 }
 
 resource "time_sleep" "addons" {
