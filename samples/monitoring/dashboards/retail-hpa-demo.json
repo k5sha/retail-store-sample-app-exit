@@ -32,7 +32,7 @@
           "color": {
             "mode": "palette-classic"
           },
-          "decimals": 2,
+          "decimals": 0,
           "mappings": [],
           "min": 0,
           "thresholds": {
@@ -44,15 +44,15 @@
               },
               {
                 "color": "orange",
-                "value": 50
+                "value": 3
               },
               {
                 "color": "red",
-                "value": 100
+                "value": 5
               }
             ]
           },
-          "unit": "reqps"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -67,7 +67,6 @@
         "legend": {
           "calcs": [
             "lastNotNull",
-            "mean",
             "max"
           ],
           "displayMode": "table",
@@ -81,18 +80,21 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "editorMode": "code",
-          "expr": "sum(rate(http_requests_total[5m]))",
-          "legendFormat": "request rate",
+          "expr": "kube_horizontalpodautoscaler_status_current_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache-hpa\"}",
+          "legendFormat": "current replicas",
           "range": true,
           "refId": "A"
+        },
+        {
+          "editorMode": "code",
+          "expr": "kube_horizontalpodautoscaler_status_desired_replicas{namespace=\"default\",horizontalpodautoscaler=\"php-apache-hpa\"}",
+          "legendFormat": "desired replicas",
+          "range": true,
+          "refId": "B"
         }
       ],
-      "title": "Request Rate",
+      "title": "HPA Replicas",
       "type": "timeseries"
     },
     {
@@ -105,9 +107,8 @@
           "color": {
             "mode": "palette-classic"
           },
-          "decimals": 2,
+          "decimals": 0,
           "mappings": [],
-          "max": 100,
           "min": 0,
           "thresholds": {
             "mode": "absolute",
@@ -118,7 +119,7 @@
               },
               {
                 "color": "orange",
-                "value": 1
+                "value": 3
               },
               {
                 "color": "red",
@@ -126,7 +127,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "short"
         },
         "overrides": []
       },
@@ -141,7 +142,6 @@
         "legend": {
           "calcs": [
             "lastNotNull",
-            "mean",
             "max"
           ],
           "displayMode": "table",
@@ -155,18 +155,14 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "editorMode": "code",
-          "expr": "100 * sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))",
-          "legendFormat": "error rate %",
+          "expr": "count(kube_pod_status_ready{namespace=\"default\",condition=\"true\",pod=~\"php-apache-.*\"} == 1)",
+          "legendFormat": "ready pods",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Error Rate %",
+      "title": "Ready Pods",
       "type": "timeseries"
     },
     {
@@ -179,7 +175,7 @@
           "color": {
             "mode": "palette-classic"
           },
-          "decimals": 3,
+          "decimals": 4,
           "mappings": [],
           "min": 0,
           "thresholds": {
@@ -191,21 +187,21 @@
               },
               {
                 "color": "orange",
-                "value": 0.3
+                "value": 0.05
               },
               {
                 "color": "red",
-                "value": 0.75
+                "value": 0.15
               }
             ]
           },
-          "unit": "s"
+          "unit": "cores"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
+        "h": 9,
+        "w": 24,
         "x": 0,
         "y": 8
       },
@@ -228,18 +224,14 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.50, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))",
-          "legendFormat": "p50",
+          "expr": "sum by (pod) (rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m]))",
+          "legendFormat": "{{pod}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Latency p50",
+      "title": "CPU Usage per Pod",
       "type": "timeseries"
     },
     {
@@ -252,7 +244,7 @@
           "color": {
             "mode": "palette-classic"
           },
-          "decimals": 3,
+          "decimals": 2,
           "mappings": [],
           "min": 0,
           "thresholds": {
@@ -264,23 +256,23 @@
               },
               {
                 "color": "orange",
-                "value": 0.5
+                "value": 50
               },
               {
                 "color": "red",
-                "value": 1
+                "value": 80
               }
             ]
           },
-          "unit": "s"
+          "unit": "percent"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 8,
-        "y": 8
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 17
       },
       "id": 4,
       "options": {
@@ -301,18 +293,14 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))",
-          "legendFormat": "p95",
+          "expr": "100 * sum(rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) by (pod) / 0.2",
+          "legendFormat": "{{pod}}",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Latency p95",
+      "title": "CPU Usage vs Request (%) per Pod",
       "type": "timeseries"
     },
     {
@@ -325,7 +313,7 @@
           "color": {
             "mode": "palette-classic"
           },
-          "decimals": 3,
+          "decimals": 4,
           "mappings": [],
           "min": 0,
           "thresholds": {
@@ -337,23 +325,23 @@
               },
               {
                 "color": "orange",
-                "value": 0.8
+                "value": 0.05
               },
               {
                 "color": "red",
-                "value": 1.5
+                "value": 0.15
               }
             ]
           },
-          "unit": "s"
+          "unit": "cores"
         },
         "overrides": []
       },
       "gridPos": {
-        "h": 8,
-        "w": 8,
-        "x": 16,
-        "y": 8
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 17
       },
       "id": 5,
       "options": {
@@ -374,18 +362,14 @@
       },
       "targets": [
         {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
           "editorMode": "code",
-          "expr": "histogram_quantile(0.99, sum by (le) (rate(http_request_duration_seconds_bucket[5m])))",
-          "legendFormat": "p99",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{namespace=\"default\",pod=~\"php-apache-.*\",container!=\"\",image!=\"\"}[2m])) / count(kube_pod_status_ready{namespace=\"default\",condition=\"true\",pod=~\"php-apache-.*\"} == 1)",
+          "legendFormat": "avg cpu per ready pod",
           "range": true,
           "refId": "A"
         }
       ],
-      "title": "Latency p99",
+      "title": "Average CPU per Ready Pod",
       "type": "timeseries"
     }
   ],
@@ -393,7 +377,8 @@
   "schemaVersion": 41,
   "tags": [
     "retail",
-    "sli",
+    "autoscaling",
+    "hpa",
     "prometheus"
   ],
   "templating": {
@@ -424,8 +409,8 @@
   },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Retail SLI",
-  "uid": "retail-sli",
+  "title": "Retail HPA / Autoscaling Demo",
+  "uid": "retail-hpa-demo1",
   "version": 1,
   "weekStart": ""
 }
