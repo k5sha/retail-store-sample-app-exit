@@ -1,4 +1,4 @@
-name: CI ECR image
+name: CI ECR images
 
 on:
   pull_request:
@@ -59,7 +59,7 @@ jobs:
           SERVICE: ${{ matrix.service }}
         run: |
           set -e
-          IMAGE_NAME="${AWS_ECR_REPOSITORY}/retail-store-sample-${SERVICE}"
+          IMAGE_NAME="${AWS_ECR_REPOSITORY}/retail-store-retail-store-sample-${SERVICE}"
 
           cd "src/${SERVICE}"
           docker build -t "${IMAGE_NAME}:${IMAGE_TAG}" .
