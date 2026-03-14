@@ -33,6 +33,12 @@ resource "helm_release" "argocd" {
     name  = "configs.params.server.insecure"
     value = "true"
   }
+
+  # Швидший sync після push: перевірка Git кожні 45 сек замість 3 хв
+  set {
+    name  = "configs.cm.timeout\\.reconciliation"
+    value = "45"
+  }
 }
 
 resource "time_sleep" "argocd_crd" {

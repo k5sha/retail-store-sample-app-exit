@@ -65,5 +65,5 @@ module "retail_app_eks" {
   gitops_repo_url                = var.gitops_repo_url
   gitops_target_revision        = var.gitops_target_revision
   gitops_path                   = var.gitops_path
-  gitops_manifests_local_path   = var.gitops_manifests_local_path
+  gitops_manifests_local_path   = var.gitops_manifests_local_path != "" ? var.gitops_manifests_local_path : "${path.module}/../../../deploy/gitops"
 }

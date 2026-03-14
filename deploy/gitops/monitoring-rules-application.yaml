@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring-rules
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: monitoring
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git
+    targetRevision: main
+    path: deploy/monitoring-rules
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

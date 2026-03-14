@@ -7,7 +7,8 @@ replicaCount: 1
 image:
   repository: public.ecr.aws/aws-containers/retail-store-sample-orders
   pullPolicy: IfNotPresent
-  tag: 
+  tag:
+
 
 imagePullSecrets: []
 nameOverride: ""
@@ -30,7 +31,7 @@ podSecurityContext:
 securityContext:
   capabilities:
     drop:
-      - ALL
+    - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 1000
@@ -72,10 +73,11 @@ configMap:
   create: true
   name:
 
+
 app:
   persistence:
-    provider: 'in-memory'
-    endpoint: ''
+    provider: 'postgres'
+    endpoint: 'orders-postgresql:5432'
     database: 'orders'
 
     secret:
@@ -90,14 +92,14 @@ app:
     rabbitmq:
       addresses: []
 
-      secret:
-        create: true
-        name: orders-rabbitmq
-        username: ""
-        password: ""
+    secret:
+      create: true
+      name: orders-db
+      username: orders
+      password: "qwerty"
 
 postgresql:
-  create: false
+  create: true
 
   image:
     repository: public.ecr.aws/docker/library/postgres
@@ -117,11 +119,11 @@ postgresql:
   affinity: {}
 
   persistentVolume:
-    enabled: false
+    enabled: true
     annotations: {}
     labels: {}
     accessModes:
-      - ReadWriteOnce
+    - ReadWriteOnce
     size: 10Gi
     # storageClass: gp2
 
@@ -153,7 +155,7 @@ rabbitmq:
     annotations: {}
     labels: {}
     accessModes:
-      - ReadWriteOnce
+    - ReadWriteOnce
     size: 10Gi
     # storageClass: gp2
 
