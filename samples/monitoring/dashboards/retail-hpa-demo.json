@@ -66,7 +66,7 @@
           "refId": "B"
         }
       ],
-      "title": "Replicas by Deployment",
+      "title": "Replicas by Deployment (тут видно скейлінг HPA)",
       "type": "timeseries"
     },
     {
@@ -106,7 +106,7 @@
           "refId": "A"
         }
       ],
-      "title": "Ready Pods by Namespace",
+      "title": "Ready Pods by Namespace (зростання = більше подів)",
       "type": "timeseries"
     },
     {
@@ -362,16 +362,19 @@
   "templating": {
     "list": [
       {
-        "current": { "selected": true, "text": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging", "value": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging" },
+        "allValue": ".*",
+        "current": { "selected": false, "text": "All (prod + staging)", "value": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging" },
         "hide": 0,
-        "label": "Namespaces (regex)",
+        "includeAll": true,
+        "label": "Namespaces",
+        "multi": true,
         "name": "namespaces",
-        "options": [
-          { "selected": true, "text": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging", "value": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging" }
-        ],
-        "query": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging",
+        "options": [],
+        "query": "label_values(kube_deployment_status_replicas, namespace)",
+        "refresh": 1,
+        "regex": "ui-prod|ui-staging|catalog|catalog-staging|carts|carts-staging|orders|orders-staging|checkout|checkout-staging",
         "skipUrlSync": false,
-        "type": "custom"
+        "type": "query"
       },
       {
         "allValue": ".*",
