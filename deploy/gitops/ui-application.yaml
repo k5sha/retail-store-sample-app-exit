@@ -14,7 +14,7 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: prod-ba9072a
+          tag: prod-acbce70
           pullPolicy: Always
         podAnnotations:
           app/buildId: "1"
