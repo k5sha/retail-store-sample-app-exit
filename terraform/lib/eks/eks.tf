@@ -169,6 +169,9 @@ module "eks_blueprints_addons" {
 
   enable_cert_manager = true
 
+  # Потрібен для HPA: без нього HPA не бачить CPU і не скейлить
+  enable_metrics_server = true
+
   enable_cluster_autoscaler = true
   cluster_autoscaler = {
     set = [
