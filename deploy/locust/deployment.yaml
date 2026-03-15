@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: locust
+  namespace: locust
+  labels:
+    app.kubernetes.io/name: locust
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: locust
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: locust
+    spec:
+      containers:
+        - name: locust
+          image: locustio/locust:2.32.4
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: web
+              containerPort: 8089
+              protocol: TCP
+          args:
+            - "-f"
+            - "/locust/locustfile.py"
+            - "--host"
+            - $(TARGET_HOST)
+          env:
+            # URL UI: сервіс = Helm release name (retail-store-ui-staging у ui-staging, retail-store-ui-prod у ui-prod)
+            - name: TARGET_HOST
+              value: "http://retail-store-ui-staging.ui-staging.svc.cluster.local"
+          volumeMounts:
+            - name: locustfile
+              mountPath: /locust
+              readOnly: true
+      volumes:
+        - name: locustfile
+          configMap:
+            name: locust-config

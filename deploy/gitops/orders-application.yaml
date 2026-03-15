@@ -13,7 +13,12 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-orders
-          tag: prod-2ba1eb9
+          tag: latest
+        autoscaling:
+          enabled: true
+          minReplicas: 1
+          maxReplicas: 10
+          targetCPUUtilizationPercentage: 70
         app:
           persistence:
             provider: in-memory
