@@ -32,9 +32,9 @@ spec:
                   key: N8N_ENCRYPTION_KEY
             # Публічний хост — n8n підставляє його в URL вебхуків (замість localhost).
             - name: N8N_HOST
-              value: "n8n.staging.zipzip.online"
+              value: "n8n-staging.zipzip.online"
             - name: WEBHOOK_URL
-              value: "https://n8n.staging.zipzip.online/"
+              value: "https://n8n-staging.zipzip.online/"
             - name: N8N_SECURE_COOKIE
               value: "false"
             # Для GitHub PR review: додай N8N_GITHUB_* або використовуй credentials у workflow
