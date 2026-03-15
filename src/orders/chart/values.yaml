@@ -91,6 +91,8 @@ app:
 
     rabbitmq:
       addresses: []
+      secret:
+        name: orders-mq
 
     secret:
       create: true
