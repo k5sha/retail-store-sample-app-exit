@@ -21,5 +21,11 @@ spec:
       {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
       nodePort: {{ .Values.service.nodePort }}
       {{- end }}
+    {{- if and (eq .Values.service.type "LoadBalancer") .Values.service.port443 }}
+    - port: 443
+      targetPort: http
+      protocol: TCP
+      name: https
+    {{- end }}
   selector:
     {{- include "ui.selectorLabels" . | nindent 4 }}

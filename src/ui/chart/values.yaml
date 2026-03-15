@@ -40,6 +40,7 @@ securityContext:
 service:
   type: ClusterIP
   port: 80
+  port443: false  # set true for LoadBalancer + SSL (NLB listener 443)
   # annotations: {}
   # loadBalancerClass: ""
   # nodePort: 30000
