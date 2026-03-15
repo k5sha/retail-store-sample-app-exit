@@ -26,7 +26,7 @@ spec:
             service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
             service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
             service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
-            external-dns.alpha.kubernetes.io/hostname: zipzip.online
+            external-dns.alpha.kubernetes.io/hostname: demo.zipzip.online
             service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${cert_arn}
             service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
   destination:
