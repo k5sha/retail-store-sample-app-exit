@@ -20,6 +20,7 @@ spec:
           app/buildId: "1"
         service:
           type: LoadBalancer
+          port443: true
           annotations:
             service.beta.kubernetes.io/aws-load-balancer-type: external
             service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing

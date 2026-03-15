@@ -14,12 +14,13 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: stg-92b28bb
+          tag: stg-0a207f6
           pullPolicy: Always
         podAnnotations:
           app/buildId: "1"
         service:
           type: LoadBalancer
+          port443: true
           annotations:
             service.beta.kubernetes.io/aws-load-balancer-type: external
             service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
