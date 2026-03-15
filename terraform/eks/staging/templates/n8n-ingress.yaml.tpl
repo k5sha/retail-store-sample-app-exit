@@ -20,7 +20,7 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-    - host: n8n.staging.zipzip.online
+    - host: n8n-staging.zipzip.online
       http:
         paths:
           - path: /
