@@ -38,6 +38,11 @@ module "eks_cluster" {
       min_size     = 1
       max_size     = 3
       desired_size = 1
+
+      tags = {
+        "k8s.io/cluster-autoscaler/${var.environment_name}" = "owned"
+        "k8s.io/cluster-autoscaler/enabled"                  = "true"
+      }
     }
 
     node_group_2 = {
@@ -49,6 +54,11 @@ module "eks_cluster" {
       min_size     = 1
       max_size     = 3
       desired_size = 1
+
+      tags = {
+        "k8s.io/cluster-autoscaler/${var.environment_name}" = "owned"
+        "k8s.io/cluster-autoscaler/enabled"                  = "true"
+      }
     }
 
     node_group_3 = {
@@ -60,6 +70,11 @@ module "eks_cluster" {
       min_size     = 1
       max_size     = 3
       desired_size = 1
+
+      tags = {
+        "k8s.io/cluster-autoscaler/${var.environment_name}" = "owned"
+        "k8s.io/cluster-autoscaler/enabled"                  = "true"
+      }
     }
   }
 
@@ -153,6 +168,13 @@ module "eks_blueprints_addons" {
   }
 
   enable_cert_manager = true
+
+  enable_cluster_autoscaler = true
+  cluster_autoscaler = {
+    set = [
+      { name = "autoDiscovery.clusterName", value = module.eks_cluster.cluster_name }
+    ]
+  }
 
   enable_external_dns            = var.route53_zone_id != "" && var.external_dns_domain_filter != ""
   external_dns_route53_zone_arns = var.route53_zone_id != "" ? ["arn:${data.aws_partition.current.partition}:route53:::hostedzone/${var.route53_zone_id}"] : []

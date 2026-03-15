@@ -14,6 +14,11 @@ spec:
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-catalog
           tag: prod-9303a8d
+        autoscaling:
+          enabled: true
+          minReplicas: 1
+          maxReplicas: 10
+          targetCPUUtilizationPercentage: 70
   destination:
     server: https://kubernetes.default.svc
     namespace: catalog
