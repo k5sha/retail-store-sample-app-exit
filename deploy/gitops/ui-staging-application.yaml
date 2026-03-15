@@ -14,7 +14,7 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: stg-488aa71
+          tag: stg-45400db
           pullPolicy: Always
         podAnnotations:
           app/buildId: "1"
