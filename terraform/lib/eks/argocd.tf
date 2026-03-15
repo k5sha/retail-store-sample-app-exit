@@ -6,8 +6,8 @@
 
 locals {
   gitops_ok = var.gitops_enabled && var.gitops_repo_url != ""
-  # Prod: тільки *-application.yaml без "staging"; staging: тільки *-staging-application.yaml
-  gitops_dir_include  = var.gitops_target_revision == "staging" ? "*staging*.yaml" : "*.yaml"
+  # Prod: всі *.yaml крім *staging*; staging: *staging*.yaml + monitoring (моніторинг в обох середовищах через CD)
+  gitops_dir_include  = var.gitops_target_revision == "staging" ? "{*staging*.yaml,monitoring*.yaml,monitoring-rules*.yaml,autoscaling*.yaml}" : "*.yaml"
   gitops_dir_exclude  = var.gitops_target_revision == "staging" ? "" : "*staging*"
 }
 
@@ -143,6 +143,7 @@ resource "null_resource" "argocd_child_apps_apply" {
       shopt -s nullglob
       if [ "$REV" = "staging" ]; then
         for f in "$DIR"/*staging*.yaml; do kubectl apply -f "$f" || exit 1; done
+        for f in "$DIR"/monitoring*.yaml "$DIR"/monitoring-rules*.yaml "$DIR"/autoscaling*.yaml; do [ -e "$f" ] && kubectl apply -f "$f" || true; done
       else
         for f in "$DIR"/*.yaml; do
           case "$f" in *staging*) continue ;; esac
