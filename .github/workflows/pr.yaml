@@ -23,6 +23,8 @@ jobs:
       - name: Setup Env
         uses: ./.github/actions/setup-env
       - name: Test
+        env:
+          NODE_OPTIONS: "--max-old-space-size=4096"
         run: |
           yarn lint:pr
 
