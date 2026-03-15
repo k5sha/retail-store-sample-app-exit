@@ -13,7 +13,7 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-cart
-          tag: stg-edc511a
+          tag: stg-b3f1daf
   destination:
     server: https://kubernetes.default.svc
     namespace: carts-staging
