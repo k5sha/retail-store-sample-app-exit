@@ -1,0 +1,31 @@
+# ServiceMonitor для retail-store: Prometheus скрейпить /actuator/prometheus з сервісів у retail namespaces.
+# Сервіси мають label app.kubernetes.io/owner=retail-store-sample (Helm charts).
+# release: monitoring — Helm release name у Argo CD (monitoring Application).
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: retail-store
+  namespace: monitoring
+  labels:
+    release: monitoring
+spec:
+  namespaceSelector:
+    matchNames:
+      - ui-prod
+      - ui-staging
+      - catalog
+      - catalog-staging
+      - carts
+      - carts-staging
+      - orders
+      - orders-staging
+      - checkout
+      - checkout-staging
+  selector:
+    matchLabels:
+      app.kubernetes.io/owner: retail-store-sample
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 15s
+      scrapeTimeout: 10s

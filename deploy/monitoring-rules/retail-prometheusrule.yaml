@@ -9,6 +9,37 @@ metadata:
     release: monitoring
 spec:
   groups:
+  - name: retail.sli
+    rules:
+    # 5xx rate > 1% (application metrics from Spring Boot /actuator/prometheus)
+    - alert: RetailHigh5xxRate
+      expr: |
+        (
+          sum(rate(http_server_requests_seconds_count{status=~"5.."}[5m])) by (job, namespace)
+          / sum(rate(http_server_requests_seconds_count[5m])) by (job, namespace)
+        ) > 0.01
+      for: 3m
+      labels:
+        severity: critical
+        team: retail
+      annotations:
+        summary: "Retail 5xx error rate above 1%"
+        description: "Job {{ $labels.job }} in {{ $labels.namespace }} has 5xx rate > 1% (current: {{ $value }})."
+
+    # Latency p95 > 500ms
+    - alert: RetailHighLatencyP95
+      expr: |
+        histogram_quantile(0.95,
+          sum(rate(http_server_requests_seconds_bucket[5m])) by (le, job, namespace)
+        ) > 0.5
+      for: 3m
+      labels:
+        severity: warning
+        team: retail
+      annotations:
+        summary: "Retail latency p95 above 500ms"
+        description: "Job {{ $labels.job }} in {{ $labels.namespace }} has p95 latency > 500ms."
+
   - name: retail.rules
     rules:
     # Поди в retail namespaces не в готовому стані
