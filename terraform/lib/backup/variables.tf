@@ -23,8 +23,8 @@ variable "cold_storage_after_days" {
 
 variable "delete_after_days" {
   type        = number
-  default     = 35
-  description = "Days after which to delete recovery points."
+  default     = 97
+  description = "Days after which to delete recovery points. Must be at least 90 days after cold_storage_after_days (AWS requirement)."
 }
 
 variable "selection_tag_key" {
