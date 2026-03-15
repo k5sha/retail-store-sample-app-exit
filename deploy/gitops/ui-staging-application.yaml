@@ -14,21 +14,10 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: stg-b2df85c
+          tag: stg-04aec37
           pullPolicy: Always
         podAnnotations:
           app/buildId: "1"
-        resources:
-          limits:
-            memory: 768Mi
-          requests:
-            cpu: 128m
-            memory: 512Mi
-        autoscaling:
-          enabled: true
-          minReplicas: 1
-          maxReplicas: 10
-          targetCPUUtilizationPercentage: 70
         service:
           type: LoadBalancer
           port443: true

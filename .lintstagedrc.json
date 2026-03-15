@@ -4,5 +4,6 @@
   "*.xml": "prettier --write",
   "*.go": "gofmt -w",
   "*.tf": ["terraform fmt", "tflint"],
-  "samples/**/*": "yarn nx run-many -t update-samples --projects=tag:sample"
+  "samples/data/**": "yarn nx run-many -t update-samples --projects=tag:sample --parallel=1",
+  "samples/images/**": "yarn nx run-many -t update-samples --projects=tag:sample --parallel=1"
 }
