@@ -70,7 +70,20 @@ spec:
             httpGet:
               path: /actuator/health/readiness
               port: 8080
-            initialDelaySeconds: 10
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds | default 45 }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds | default 10 }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds | default 10 }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold | default 6 }}
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.livenessProbe.httpGet.path | default "/actuator/health/liveness" }}
+              port: {{ .Values.livenessProbe.httpGet.port | default 8080 }}
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds | default 60 }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds | default 15 }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds | default 10 }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold | default 3 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

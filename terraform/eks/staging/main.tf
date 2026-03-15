@@ -70,3 +70,10 @@ module "retail_app_eks" {
   route53_zone_id             = data.aws_route53_zone.zipzip.zone_id
   external_dns_domain_filter  = "zipzip.online"
 }
+
+module "backup" {
+  source = "../../lib/backup"
+
+  environment_name = var.environment_name
+  tags             = module.tags.result
+}

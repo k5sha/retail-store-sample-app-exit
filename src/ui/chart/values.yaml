@@ -52,6 +52,22 @@ resources:
     cpu: 128m
     memory: 512Mi
 
+# Java app can be slow to start; give more time before/for readiness probe.
+readinessProbe:
+  initialDelaySeconds: 45
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 6
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health/liveness
+    port: 8080
+  initialDelaySeconds: 60
+  periodSeconds: 15
+  timeoutSeconds: 10
+  failureThreshold: 3
+
 autoscaling:
   enabled: false
   minReplicas: 1
