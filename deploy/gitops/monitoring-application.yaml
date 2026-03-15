@@ -42,6 +42,27 @@ spec:
           enabled: true
           service:
             type: ClusterIP
+          config:
+            global:
+              resolve_timeout: 5m
+            route:
+              group_by: ['alertname', 'namespace', 'severity']
+              group_wait: 10s
+              group_interval: 30s
+              repeat_interval: 2h
+              receiver: default
+            receivers:
+              # Замініть url на свій webhook (Slack, Telegram, SMS-шлюз тощо) або додайте email_configs.
+              - name: default
+                webhook_configs:
+                  - url: 'https://your-webhook-url.example.com/alert'
+                    send_resolved: true
+              # Приклад email (розкоментуйте і вкажіть SMTP/пароль через Secret або values):
+              # - name: email
+              #   email_configs:
+              #   - to: 'team@example.com'
+              #     send_resolved: true
+            inhibit_rules: []
 
         kubeStateMetrics:
           enabled: true
