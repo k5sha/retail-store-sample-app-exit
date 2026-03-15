@@ -11,4 +11,5 @@ spec:
   resources:
     requests:
       storage: 5Gi
-  # storageClassName: optional, use default if not set
+  # EKS: gp2 або gp3; якщо є default StorageClass — можна закоментувати
+  storageClassName: gp2

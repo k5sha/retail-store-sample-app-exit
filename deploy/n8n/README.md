@@ -33,6 +33,16 @@ Workflow-автоматизація (n8n) деплоїться **лише на s
 3. **Webhook URL у кластері:**  
    Для n8n налаштовано **Ingress** (ALB). Після Sync застосунку n8n перевір Ingress: `kubectl get ingress -n n8n` — поле **ADDRESS** (або хост) і є публічний URL. У GitHub Webhook вкажи `https://<ADDRESS>/webhook/...` (шлях webhook дає n8n у картці вузла Webhook). Якщо webhook-посилання в n8n показують localhost, задай змінну середовища **N8N_HOST**: онови в Deployment `env` значення `N8N_HOST` на DNS Ingress/ALB (або створи ConfigMap/Secret і підстав через `valueFrom`), потім перезапусти под.
 
+## Якщо под у Pending (unbound PersistentVolumeClaims)
+
+Помилка `pod has unbound immediate PersistentVolumeClaims` означає, що PVC `n8n-data` не отримав том. Зазвичай це через відсутність default StorageClass у кластері.
+
+1. Перевір класи: `kubectl get storageclass` — має бути один з `(default)`.
+2. У `deploy/n8n/pvc.yaml` вказано `storageClassName: gp2` (типово для EKS). Якщо в кластері лише `gp3` або інший клас — зміни значення на його ім’я і зроби Sync.
+3. Якщо PVC вже створений без `storageClassName`, його не оновити. Видали його і дай Argo CD перестворити:  
+   `kubectl delete pvc n8n-data -n n8n`  
+   Після наступного Sync PVC створиться з новим класом і под має піти в Running.
+
 ## Ресурси
 
 - Дані (workflows, credentials) зберігаються на PVC `n8n-data` (5Gi), монтованому в `/home/node/.n8n`.
