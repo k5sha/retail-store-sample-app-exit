@@ -7,6 +7,7 @@ metadata:
   labels:
     app.kubernetes.io/name: n8n
   annotations:
+    external-dns.alpha.kubernetes.io/hostname: n8n.staging.zipzip.online
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/healthcheck-path: /healthz
