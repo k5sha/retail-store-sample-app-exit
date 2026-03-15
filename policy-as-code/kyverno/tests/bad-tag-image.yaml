@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bad-tag-image
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bad-tag-image
+  template:
+    metadata:
+      labels:
+        app: bad-tag-image
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          securityContext:
+            runAsNonRoot: true
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "200m"
+              memory: "256Mi"

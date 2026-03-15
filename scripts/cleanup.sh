@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-kubectl delete -f ./samples/autoscaling/php-apache-hpa.yaml --ignore-not-found=true
-kubectl delete -f ./samples/autoscaling/php-apache.yaml --ignore-not-found=true
-kubectl delete -f ./samples/monitoring/alerts/retail-prometheusrule.yaml --ignore-not-found=true
+kubectl delete -f ./deploy/autoscaling/php-apache-hpa.yaml --ignore-not-found=true
+kubectl delete -f ./deploy/autoscaling/php-apache.yaml --ignore-not-found=true
+kubectl delete -f ./deploy/monitoring-rules/retail-prometheusrule.yaml --ignore-not-found=true
 
-if [ -f ./samples/monitoring/servicemonitors/retail-servicemonitor.yaml ]; then
+if [ -s ./samples/monitoring/servicemonitors/retail-servicemonitor.yaml ]; then
   kubectl delete -f ./samples/monitoring/servicemonitors/retail-servicemonitor.yaml --ignore-not-found=true
 fi
 

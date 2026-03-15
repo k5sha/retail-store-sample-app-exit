@@ -1,0 +1,20 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-image-digest
+spec:
+  validationFailureAction: Enforce
+  background: true
+  rules:
+    - name: images-must-use-digest
+      match:
+        any:
+          - resources:
+              kinds:
+                - Pod
+      validate:
+        message: "Container images must use a digest, for example nginx@sha256:..."
+        foreach:
+          - list: "request.object.spec.containers"
+            pattern:
+              image: "*@sha256:*"

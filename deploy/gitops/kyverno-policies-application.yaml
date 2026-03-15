@@ -1,0 +1,22 @@
+# ClusterPolicy — політики Kyverno з репо; завжди синхронізуються з Git.
+# Перевіряють кожен створений/оновлений Pod (і подібні ресурси) на відповідність політикам.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kyverno-policies
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git
+    targetRevision: main
+    path: policy-as-code/kyverno/policies
+    kustomize:
+      enable: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: ""
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

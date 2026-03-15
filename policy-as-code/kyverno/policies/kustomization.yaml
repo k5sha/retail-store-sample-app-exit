@@ -1,0 +1,8 @@
+# Kustomization для деплою політик у кластер (Argo CD або kubectl apply -k).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - disallow-privileged.yaml
+  - require-image-digest.yaml
+  - require-resources.yaml
+  - require-run-as-non-root.yaml
