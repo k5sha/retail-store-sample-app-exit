@@ -66,4 +66,7 @@ module "retail_app_eks" {
   gitops_target_revision        = var.gitops_target_revision
   gitops_path                   = var.gitops_path
   gitops_manifests_local_path   = var.gitops_manifests_local_path != "" ? var.gitops_manifests_local_path : "${path.module}/../../../deploy/gitops"
+
+  route53_zone_id            = data.aws_route53_zone.zipzip.zone_id
+  external_dns_domain_filter = "zipzip.online"
 }

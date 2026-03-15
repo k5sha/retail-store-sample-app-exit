@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: n8n-data
+  namespace: n8n
+  labels:
+    app.kubernetes.io/name: n8n
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # EKS: gp2 або gp3; якщо є default StorageClass — можна закоментувати
+  storageClassName: gp2

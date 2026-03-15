@@ -73,3 +73,16 @@ variable "gitops_manifests_local_path" {
   type        = string
   default     = ""
 }
+
+# Route 53 + ExternalDNS: zone для записів Ingress (zipzip.online / staging.zipzip.online).
+variable "route53_zone_id" {
+  description = "Route 53 hosted zone ID (e.g. for zipzip.online). When set, ExternalDNS is enabled."
+  type        = string
+  default     = ""
+}
+
+variable "external_dns_domain_filter" {
+  description = "Domain filter for ExternalDNS (e.g. staging.zipzip.online or zipzip.online)."
+  type        = string
+  default     = ""
+}

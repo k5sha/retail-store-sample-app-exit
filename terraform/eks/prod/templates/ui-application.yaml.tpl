@@ -14,7 +14,7 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: prod-bc07fdb
+          tag: latest
           pullPolicy: Always
         podAnnotations:
           app/buildId: "1"
@@ -26,7 +26,7 @@ spec:
             service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
             service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
             external-dns.alpha.kubernetes.io/hostname: zipzip.online
-            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-central-1:718286622836:certificate/69b24b7b-e73c-43c1-a71f-50ec622dd9dc
+            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${cert_arn}
             service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
   destination:
     server: https://kubernetes.default.svc
