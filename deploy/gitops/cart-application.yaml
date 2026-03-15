@@ -13,7 +13,7 @@ spec:
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-cart
-          tag: prod-9303a8d
+          tag: prod-1dac229
         autoscaling:
           enabled: true
           minReplicas: 1
