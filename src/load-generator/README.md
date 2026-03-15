@@ -16,7 +16,22 @@ bash scripts/run-docker.sh --help
 
 ### Kubernetes
 
-You can easily run the load generator as one or more Pods in a Kubernetes cluster. For example:
+**One-liner (без init container):** образ Artillery має entrypoint `artillery`, тому потрібно явно задати команду `bash -c "..."` через `--command`:
+
+```bash
+# Видалити старий под, якщо залишився
+kubectl delete pod load-gen --ignore-not-found
+
+# Запуск (підставте URL вашого UI та namespace при потребі)
+TARGET="http://ui.ui-staging.svc.cluster.local:80"
+kubectl run load-gen --rm -it --restart=Never \
+  --image=artilleryio/artillery:2.0.22 \
+  --command -- bash -c "curl -sL https://raw.githubusercontent.com/aws-containers/retail-store-sample-app/main/src/load-generator/scenario.yml -o /tmp/s.yml && curl -sL https://raw.githubusercontent.com/aws-containers/retail-store-sample-app/main/src/load-generator/helpers.js -o /tmp/helpers.js && cd /tmp && artillery run -t $TARGET /tmp/s.yml"
+```
+
+Якщо под має бути в тому ж namespace, що й UI (наприклад `ui-staging`), додайте `-n ui-staging`. Сценарій очікує `helpers.js` у тій самій директорії, що й scenario.yml — при завантаженні з GitHub обидва файли потрапляють у `/tmp/`, але в scenario вказано `processor: "./helpers.js"`; при запуску з `/tmp/s.yml` Artillery шукає helpers поруч, тобто `/tmp/helpers.js` — це ок.
+
+**З ConfigMap/volume (скопійовані сценарії):**
 
 (Note: Update `http://ui.ui.svc` to reflect your namespace structure)
 
