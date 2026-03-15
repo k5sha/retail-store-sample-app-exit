@@ -43,7 +43,13 @@ Workflow-автоматизація (n8n) деплоїться **лише на s
    `kubectl delete pvc n8n-data -n n8n`  
    Після наступного Sync PVC створиться з новим класом і под має піти в Running.
 
+4. Якщо PVC вже з `gp2`, але і PVC, і под у Pending: у EKS клас `gp2` часто має **WaitForFirstConsumer** — том створюється після планування пода. Перезапусти под:  
+   `kubectl delete pod -n n8n -l app.kubernetes.io/name=n8n`  
+   Новий под запланується на ноду, provisioner створить EBS і прив’яже PVC.
+
+5. **Якщо планувальник все одно не ставить под** (unbound immediate PersistentVolumeClaims): у маніфестах тимчасово використано **emptyDir** замість PVC — под стартує без томів. Дані (workflows, credentials) не зберігаються після рестарту пода. Щоб повернути збереження: у `deploy/n8n/deployment.yaml` заміни `emptyDir: {}` на `persistentVolumeClaim: claimName: n8n-data` і виріши проблему з PVC в кластері (наприклад, default StorageClass або EBS CSI driver).
+
 ## Ресурси
 
-- Дані (workflows, credentials) зберігаються на PVC `n8n-data` (5Gi), монтованому в `/home/node/.n8n`.
+- Дані: зараз **emptyDir** (без персистенції після рестарту). Для персистенції — PVC `n8n-data` (5Gi), див. крок 5 вище.
 - Образ: `docker.n8n.io/n8nio/n8n:latest`. Оновлення: змінити тег у `deploy/n8n/deployment.yaml` і закомітити, Argo CD зробить rollout.

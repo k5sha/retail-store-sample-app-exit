@@ -57,6 +57,8 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 5
       volumes:
+        # emptyDir: под стартує без чекання PVC. Дані втрачаються при рестарті пода.
+        # Для збереження workflows/credentials поверни PVC: замість emptyDir використай
+        # persistentVolumeClaim: claimName: n8n-data (і переконайся, що PVC binding працює).
         - name: n8n-data
-          persistentVolumeClaim:
-            claimName: n8n-data
+          emptyDir: {}
