@@ -147,14 +147,33 @@ module "eks_blueprints_addons" {
 
   enable_aws_load_balancer_controller = true
   aws_load_balancer_controller = {
-    # Avoid "no endpoints available for service aws-load-balancer-webhook-service" when
-    # cert-manager (or any Service) is created before the webhook pods are ready.
     set = [
       { name = "enableServiceMutatorWebhook", value = "false" }
     ]
   }
 
   enable_cert_manager = true
+
+  enable_external_dns            = var.route53_zone_id != "" && var.external_dns_domain_filter != ""
+  external_dns_route53_zone_arns = var.route53_zone_id != "" ? ["arn:${data.aws_partition.current.partition}:route53:::hostedzone/${var.route53_zone_id}"] : []
+  external_dns = var.route53_zone_id != "" && var.external_dns_domain_filter != "" ? {
+    set = [
+      { name = "domainFilters[0]", value = var.external_dns_domain_filter },
+      { name = "policy", value = "upsert-only" }
+    ]
+    source_policy_documents   = []
+    override_policy_documents = []
+    role_permissions_boundary_arn = ""
+    role_policies             = {}
+    policy_statements         = []
+  } : {
+    set = []
+    source_policy_documents   = []
+    override_policy_documents = []
+    role_permissions_boundary_arn = ""
+    role_policies             = {}
+    policy_statements         = []
+  }
 }
 
 resource "time_sleep" "addons" {
