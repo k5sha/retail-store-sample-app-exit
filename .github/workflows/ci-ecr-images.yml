@@ -112,7 +112,8 @@ jobs:
             done
           else
             for f in deploy/gitops/ui-application.yaml deploy/gitops/catalog-application.yaml deploy/gitops/cart-application.yaml deploy/gitops/orders-application.yaml deploy/gitops/checkout-application.yaml; do
-              [ -f "$f" ] && sed -i "s/tag: latest/tag: ${TAG}/" "$f"
+              # Replace either latest or existing prod-<sha> so prod always gets the new tag
+              [ -f "$f" ] && sed -i "s/tag: latest/tag: ${TAG}/; s/tag: prod-[a-f0-9]*/tag: ${TAG}/" "$f"
             done
           fi
 
