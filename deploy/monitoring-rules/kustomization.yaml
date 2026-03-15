@@ -7,11 +7,13 @@ namespace: monitoring
 
 resources:
   - retail-prometheusrule.yaml
+  - retail-servicemonitor.yaml
 
 configMapGenerator:
   - name: grafana-dashboards-retail
     files:
       - dashboards/retail-hpa-demo.json
+      - dashboards/retail-sli.json
     options:
       labels:
         grafana_dashboard: "1"
