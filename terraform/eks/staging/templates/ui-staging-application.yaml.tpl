@@ -1,20 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: retail-store-ui-prod
+  name: retail-store-ui-staging
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git
-    targetRevision: main
+    targetRevision: staging
     path: src/ui/chart
     helm:
-      releaseName: retail-store-ui-prod
+      releaseName: retail-store-ui-staging
       values: |
         image:
           repository: 718286622836.dkr.ecr.eu-central-1.amazonaws.com/retail-store-retail-store-sample-ui
-          tag: latest
+          tag: stg-9a04ab5
           pullPolicy: Always
         podAnnotations:
           app/buildId: "1"
@@ -25,12 +25,12 @@ spec:
             service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
             service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
             service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
-            external-dns.alpha.kubernetes.io/hostname: zipzip.online
-            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-central-1:718286622836:certificate/69b24b7b-e73c-43c1-a71f-50ec622dd9dc
+            external-dns.alpha.kubernetes.io/hostname: staging.zipzip.online
+            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${cert_arn}
             service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
   destination:
     server: https://kubernetes.default.svc
-    namespace: ui-prod
+    namespace: ui-staging
   syncPolicy:
     automated:
       prune: true

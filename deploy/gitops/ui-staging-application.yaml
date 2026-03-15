@@ -26,6 +26,8 @@ spec:
             service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: ip
             service.beta.kubernetes.io/aws-load-balancer-attributes: "load_balancing.cross_zone.enabled=true"
             external-dns.alpha.kubernetes.io/hostname: staging.zipzip.online
+            service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:eu-central-1:718286622836:certificate/69b24b7b-e73c-43c1-a71f-50ec622dd9dc
+            service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "443"
   destination:
     server: https://kubernetes.default.svc
     namespace: ui-staging
@@ -35,4 +37,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
