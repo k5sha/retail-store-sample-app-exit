@@ -9,6 +9,7 @@ spec:
     namespace: monitoring
     server: https://kubernetes.default.svc
   source:
+    # Обовʼязково вкажіть репо, куди ви пушите (інакше дашборди/алерти не зʼявляться). Див. deploy/monitoring-rules/TROUBLESHOOTING.md
     repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git
     targetRevision: main
     path: deploy/monitoring-rules
