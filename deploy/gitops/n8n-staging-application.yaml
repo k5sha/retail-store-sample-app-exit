@@ -1,0 +1,21 @@
+# n8n для staging — синхронізує deploy/n8n з гілки staging (як інші *-staging-application).
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: n8n-staging
+  namespace: argocd
+spec:
+  project: default
+  destination:
+    namespace: n8n
+    server: https://kubernetes.default.svc
+  source:
+    repoURL: https://github.com/k5sha/retail-store-sample-app-exit.git
+    targetRevision: staging
+    path: deploy/n8n
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

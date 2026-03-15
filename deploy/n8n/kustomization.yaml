@@ -1,0 +1,13 @@
+# n8n — workflow automation (e.g. GitHub PR review). Доступ: kubectl port-forward svc/n8n -n n8n 5678:5678
+# Перед першим Sync створи секрет: kubectl create secret generic n8n-secrets -n n8n --from-literal=N8N_ENCRYPTION_KEY=$(openssl rand -base64 32)
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: n8n
+
+resources:
+  - namespace.yaml
+  - pvc.yaml
+  - deployment.yaml
+  - service.yaml
+  - ingress.yaml
